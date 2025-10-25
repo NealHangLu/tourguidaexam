@@ -2,8 +2,8 @@ import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 import { Alert, Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { ThemedText } from '../../components/themed-text';
+import { IconSymbol } from '../../components/ui/icon-symbol';
 
 export default function HomeScreen() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -183,7 +183,7 @@ export default function HomeScreen() {
           
           <TouchableOpacity
             style={styles.moreButton}
-            onPress={() => Alert.alert('更多考卷', '查看更多考卷')}
+            onPress={() => router.push('/mock-exams')}
           >
             <ThemedText style={styles.moreButtonText}>查看更多考卷</ThemedText>
           </TouchableOpacity>

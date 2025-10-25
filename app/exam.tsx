@@ -1,5 +1,5 @@
-import { ThemedText } from '@/components/themed-text';
-import { IconSymbol } from '@/components/ui/icon-symbol';
+import { ThemedText } from '../components/themed-text';
+import { IconSymbol } from '../components/ui/icon-symbol';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -230,7 +230,9 @@ const MOCK_QUESTIONS: Question[] = [
 ];
 
 export default function ExamPage() {
-  const { subjectId } = useLocalSearchParams<{ subjectId: string }>();
+    const { subjectId: paramSubjectId, paperId, title } = useLocalSearchParams<{ subjectId: string; paperId: string; title: string }>();
+    const subjectId = paramSubjectId || 'fagui';
+    const paperTitle = title || '考试';
   const [session, setSession] = useState<ExamSession>({
     questions: [],
     currentIndex: 0,
@@ -365,9 +367,7 @@ export default function ExamPage() {
           <IconSymbol name="chevron.left" size={24} color="#000" />
         </TouchableOpacity>
         <View style={styles.headerCenter}>
-          <ThemedText style={styles.headerTitle}>
-            {subjectNames[session.subjectId as keyof typeof subjectNames]}
-          </ThemedText>
+          <ThemedText style={styles.headerTitle}>{paperTitle}</ThemedText>
         </View>
         <View style={styles.headerRight} />
       </View>
@@ -375,14 +375,20 @@ export default function ExamPage() {
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* 题目类型标签 */}
           <View style={styles.questionTypeContainer}>
-            <View style={styles.questionTypeTag}>
+            <View style={[
+              styles.questionTypeTag,
+              currentQuestion.type === QuestionType.SINGLE ? styles.singleSelectTag : styles.otherTypeTag
+            ]}>
               <IconSymbol 
                 name={currentQuestion.type === QuestionType.SINGLE ? '1.circle.fill' : 
                       currentQuestion.type === QuestionType.MULTI ? 'checkmark.circle.fill' : 'questionmark.circle.fill'} 
-                size={14} 
-                color="white" 
+                size={12} 
+                color={currentQuestion.type === QuestionType.SINGLE ? '#007AFF' : 'white'} 
               />
-              <ThemedText style={styles.questionTypeText}>
+              <ThemedText style={[
+                  styles.questionTypeText,
+                  currentQuestion.type === QuestionType.SINGLE && styles.singleSelectText
+                ]}>
                 {currentQuestion.type === QuestionType.SINGLE ? '单选' : 
                  currentQuestion.type === QuestionType.MULTI ? '多选' : '判断'}
               </ThemedText>
@@ -494,28 +500,28 @@ export default function ExamPage() {
       <View style={styles.tabBar}>
         <TouchableOpacity 
           style={styles.tabItem} 
-          onPress={() => router.push('/(tabs)/')}
+          onPress={() => router.push('/')}
         >
           <IconSymbol name="pencil.and.outline" size={24} color="#007AFF" />
           <ThemedText style={styles.tabText}>笔试</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.tabItem} 
-          onPress={() => router.push('/(tabs)/interview')}
+          onPress={() => router.push('/interview')}
         >
           <IconSymbol name="person.2.fill" size={24} color="#6C757D" />
           <ThemedText style={styles.tabText}>面试</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.tabItem} 
-          onPress={() => router.push('/(tabs)/study')}
+          onPress={() => router.push('/study')}
         >
           <IconSymbol name="book.fill" size={24} color="#6C757D" />
           <ThemedText style={styles.tabText}>学习</ThemedText>
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.tabItem} 
-          onPress={() => router.push('/(tabs)/profile')}
+          onPress={() => router.push('/profile')}
         >
           <IconSymbol name="person.fill" size={24} color="#6C757D" />
           <ThemedText style={styles.tabText}>我的</ThemedText>
@@ -593,19 +599,28 @@ const styles = StyleSheet.create({
   questionTypeTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#34C759',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 20,
-    shadowColor: '#34C759',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
   },
+  singleSelectTag: {
+      backgroundColor: '#E3F2FD',
+      shadowColor: '#007AFF',
+    },
+    singleSelectText: {
+      color: '#007AFF',
+    },
+    otherTypeTag: {
+      backgroundColor: '#34C759',
+      shadowColor: '#34C759',
+    },
   questionProgress: {
     fontSize: 16,
     color: '#6C757D',
@@ -613,9 +628,9 @@ const styles = StyleSheet.create({
   },
   questionTypeText: {
     color: 'white',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
-    marginLeft: 6,
+    marginLeft: 4,
   },
   questionContent: {
     fontSize: 20,
