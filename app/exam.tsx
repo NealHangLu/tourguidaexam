@@ -1,8 +1,8 @@
-import { ThemedText } from '../components/themed-text';
-import { IconSymbol } from '../components/ui/icon-symbol';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ThemedText } from '../components/themed-text';
+import { IconSymbol } from '../components/ui/icon-symbol';
 
 // 题目类型枚举
 enum QuestionType {
@@ -165,7 +165,7 @@ const MOCK_QUESTIONS: Question[] = [
       {key: 'D', value: '效率优先'}
     ], 
     answer: ['A'], 
-    explanation: '导游服务工作的基本原则是"游客至上，服务第一"。安全虽然至关重要，但是服务的核心理念是以游客为中心。' 
+    explanation: '导游服务工作的基本原则是"游客至上，服务第一"。安全虽然至关重要，但是服务的核理念是以游客为中心。' 
   },
   { 
     id: 302, 
@@ -232,7 +232,7 @@ const MOCK_QUESTIONS: Question[] = [
 export default function ExamPage() {
     const { subjectId: paramSubjectId, paperId, title } = useLocalSearchParams<{ subjectId: string; paperId: string; title: string }>();
     const subjectId = paramSubjectId || 'fagui';
-    const paperTitle = title || '考试';
+    const paperTitle = title || '导游考试';
   const [session, setSession] = useState<ExamSession>({
     questions: [],
     currentIndex: 0,
@@ -361,16 +361,7 @@ export default function ExamPage() {
 
   return (
     <View style={styles.container}>
-      {/* 顶部导航栏 */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <IconSymbol name="chevron.left" size={24} color="#000" />
-        </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <ThemedText style={styles.headerTitle}>{paperTitle}</ThemedText>
-        </View>
-        <View style={styles.headerRight} />
-      </View>
+      {/* 使用Expo Router的默认导航栏 */}
 
         <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
           {/* 题目类型标签 */}
@@ -496,37 +487,7 @@ export default function ExamPage() {
         </TouchableOpacity>
       </View>
 
-      {/* 底部Tab导航 */}
-      <View style={styles.tabBar}>
-        <TouchableOpacity 
-          style={styles.tabItem} 
-          onPress={() => router.push('/')}
-        >
-          <IconSymbol name="pencil.and.outline" size={24} color="#007AFF" />
-          <ThemedText style={styles.tabText}>笔试</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem} 
-          onPress={() => router.push('/interview')}
-        >
-          <IconSymbol name="person.2.fill" size={24} color="#6C757D" />
-          <ThemedText style={styles.tabText}>面试</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem} 
-          onPress={() => router.push('/study')}
-        >
-          <IconSymbol name="book.fill" size={24} color="#6C757D" />
-          <ThemedText style={styles.tabText}>学习</ThemedText>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={styles.tabItem} 
-          onPress={() => router.push('/profile')}
-        >
-          <IconSymbol name="person.fill" size={24} color="#6C757D" />
-          <ThemedText style={styles.tabText}>我的</ThemedText>
-        </TouchableOpacity>
-      </View>
+      
     </View>
   );
 }
@@ -587,9 +548,10 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   content: {
-    flex: 1,
-    padding: 20,
-  },
+      flex: 1,
+      padding: 2,
+      paddingBottom: 20
+    },
   questionTypeContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -832,32 +794,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
-  tabBar: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    borderTopWidth: 1,
-    borderTopColor: '#E9ECEF',
-    paddingTop: 8,
-    paddingBottom: 20,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  tabItem: {
-    flex: 1,
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  tabText: {
-    fontSize: 12,
-    color: '#6C757D',
-    marginTop: 4,
-    fontWeight: '500',
-  },
+  
 });

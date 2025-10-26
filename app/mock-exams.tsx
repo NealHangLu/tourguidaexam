@@ -140,17 +140,7 @@ const MockExamListScreen = () => {
 
   return (
     <ThemedView style={styles.container}>
-      {/* 页面头部 */}
-      <View style={styles.header}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.back()}
-        >
-          <IconSymbol name="arrow.left" size={24} color="#007AFF" />
-        </TouchableOpacity>
-        <ThemedText style={styles.headerTitle}>模拟考试卷</ThemedText>
-        <View style={styles.headerRight} />
-      </View>
+      {/* 使用Expo Router的默认导航栏 */}
 
       {/* 考试列表 */}
       <FlatList
@@ -200,7 +190,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   listContent: {
-    padding: 20,
+        padding: 2,
   },
   examCard: {
     backgroundColor: 'white',
