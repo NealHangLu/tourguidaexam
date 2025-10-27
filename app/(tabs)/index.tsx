@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
     color: '#000',
   },

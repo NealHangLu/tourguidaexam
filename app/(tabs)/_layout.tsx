@@ -34,6 +34,7 @@ export default function TabLayout() {
         name="study"
         options={{
           tabBarLabel: '学习',
+          title: '学习中心',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="book.fill" color={color} />,
         }}
       />
