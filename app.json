@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "tourguidaexam",
+    "name": "导游证考试助手",
     "slug": "tourguidaexam",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-2.png",
     "scheme": "tourguidaexam",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
