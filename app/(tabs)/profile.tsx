@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { Alert, Share, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Share, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -8,23 +7,13 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [showEmailForm, setShowEmailForm] = useState(false);
-  const [emailContent, setEmailContent] = useState('');
+
 
   const handleContactSupport = () => {
-    setShowEmailForm(true);
+    router.push('/contact-support');
   };
 
-  const handleSendEmail = () => {
-    if (!emailContent.trim()) {
-      Alert.alert('提示', '请输入反馈内容');
-      return;
-    }
-    // 这里模拟发送邮件
-    Alert.alert('成功', '您的反馈已发送，感谢您的支持！');
-    setEmailContent('');
-    setShowEmailForm(false);
-  };
+
 
   const handleShare = async () => {
     try {
@@ -38,8 +27,25 @@ export default function ProfileScreen() {
   };
 
   const handleNavigation = (route: string) => {
-    // 这里可以根据不同的路由进行导航
-    Alert.alert('提示', `即将跳转到${route}页面`);
+    // 根据不同的路由进行导航
+    switch (route) {
+      case '品牌介绍':
+        router.push('/brand-intro');
+        break;
+      case '隐私协议':
+        router.push('/privacy-policy');
+        break;
+      case '帮助':
+        router.push('/help');
+        break;
+      case '意见反馈':
+      case '联系客服':
+        router.push('/contact-support');
+        break;
+      default:
+        // 其他路由暂时保持Alert提示
+        Alert.alert('提示', `即将跳转到${route}页面`);
+    }
   };
 
   return (
@@ -162,33 +168,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </ThemedView>
 
-      {/* 联系客服邮件表单 */}
-      {showEmailForm && (
-        <View style={styles.emailFormContainer}>
-          <ThemedText style={styles.emailFormTitle}>联系客服</ThemedText>
-          <TextInput
-            style={styles.emailInput}
-            placeholder="请输入您的问题或建议..."
-            placeholderTextColor="#999"
-            multiline
-            numberOfLines={4}
-            value={emailContent}
-            onChangeText={setEmailContent}
-          />
-          <TouchableOpacity 
-            style={styles.sendButton}
-            onPress={handleSendEmail}
-          >
-            <ThemedText style={styles.sendButtonText}>发送</ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.cancelButton}
-            onPress={() => setShowEmailForm(false)}
-          >
-            <ThemedText style={styles.cancelButtonText}>取消</ThemedText>
-          </TouchableOpacity>
-        </View>
-      )}
+
     </View>
   );
 }

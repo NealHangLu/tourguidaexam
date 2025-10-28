@@ -108,6 +108,66 @@ export default function RootLayout() {
                   )
               };
             }} />
+        {/* 品牌介绍页面 */}
+        <Stack.Screen name="brand-intro" options={({ navigation }) => ({
+          title: '品牌介绍',
+          headerBackTitle: '返回',
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()}
+              style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+            </TouchableOpacity>
+          )
+        })} />
+        {/* 隐私协议页面 */}
+      <Stack.Screen name="privacy-policy" options={({ navigation }) => ({
+          title: '隐私协议',
+          headerBackTitle: '返回',
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()}
+              style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+            </TouchableOpacity>
+          )
+        })} />
+      {/* 帮助页面 */}
+      <Stack.Screen name="help" options={({ navigation }) => ({
+          title: '帮助',
+          headerBackTitle: '返回',
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()}
+              style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+            </TouchableOpacity>
+          )
+        })} />
+      {/* 联系客服页面 */}
+      <Stack.Screen name="contact-support" options={({ navigation }) => ({
+          title: '联系客服',
+          headerBackTitle: '返回',
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()}
+              style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+            </TouchableOpacity>
+          )
+        })} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
