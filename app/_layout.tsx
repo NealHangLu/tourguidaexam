@@ -38,7 +38,7 @@ export default function RootLayout() {
               style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />
@@ -53,7 +53,7 @@ export default function RootLayout() {
               style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />
@@ -67,7 +67,7 @@ export default function RootLayout() {
               style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />
@@ -86,7 +86,7 @@ export default function RootLayout() {
                       style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
                       activeOpacity={0.7}
                     >
-                      <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+                      <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
                     </TouchableOpacity>
                   )
                 };
@@ -103,7 +103,7 @@ export default function RootLayout() {
                       style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
                       activeOpacity={0.7}
                     >
-                      <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+                      <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
                     </TouchableOpacity>
                   )
               };
@@ -119,7 +119,7 @@ export default function RootLayout() {
               style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />
@@ -134,7 +134,7 @@ export default function RootLayout() {
               style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />
@@ -149,7 +149,7 @@ export default function RootLayout() {
               style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
               activeOpacity={0.7}
             >
-              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />
