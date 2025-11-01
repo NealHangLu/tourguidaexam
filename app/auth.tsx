@@ -1,9 +1,10 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 // 设置屏幕选项
 export const options = {
@@ -13,6 +14,7 @@ export const options = {
 
 export default function AuthScreen() {
   const router = useRouter();
+  const { user, login, logout, isAuthenticated } = useAuth();
   const [isLogin, setIsLogin] = useState(true); // true为登录，false为注册
   
   // 登录表单状态
@@ -49,10 +51,26 @@ export default function AuthScreen() {
     const username = convertEmailToUsername(loginEmail);
     console.log('登录使用的用户名:', username);
     
-    // 模拟登录成功
-    Alert.alert('成功', '登录成功', [
-      { text: '确定', onPress: () => router.back() }
-    ]);
+    // 模拟登录成功，获取token
+    const mockToken = 'mock-jwt-token-' + Date.now();
+    
+    // 使用认证上下文进行登录
+    login(loginEmail, mockToken);
+  };
+  
+  // 处理退出登录
+  const handleLogout = () => {
+    try {
+      logout();
+    } catch (error) {
+      Alert.alert('退出失败', '请稍后重试');
+      console.error('退出登录失败:', error);
+    }
+  };
+
+  // 返回我的页面
+  const handleGoBack = () => {
+    router.replace('/(tabs)/profile');
   };
 
   // 处理注册
@@ -290,6 +308,36 @@ export default function AuthScreen() {
            registerPassword === registerConfirmPassword;
   };
 
+  // 登录成功后显示的用户信息页面
+  const renderLoggedInView = () => (
+    <View style={styles.loggedInContainer}>
+      {/* 头像 - 使用图片 */}
+      <View style={styles.avatarContainer}>
+        <View style={styles.avatar}>
+          <Image 
+            source={require('@/assets/images/profileimage-normal.png')}
+            style={styles.avatarImage}
+          />
+        </View>
+      </View>
+
+      {/* 用户信息 - 只显示原始邮箱 */}
+      <View style={styles.userInfoContainer}>
+        <ThemedText style={styles.email}>{user?.email}</ThemedText>
+      </View>
+
+      {/* 操作按钮 - 只保留退出登录按钮 */}
+      <View style={styles.actionButtonsContainer}>
+        <TouchableOpacity
+          style={[styles.submitButton, styles.logoutButton]}
+          onPress={handleLogout}
+        >
+          <ThemedText style={styles.submitButtonText}>退出登录</ThemedText>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView 
       style={styles.container} 
@@ -299,47 +347,26 @@ export default function AuthScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        {/* 调整顶部间距 */}
-        <View style={{ marginTop: 20 }} />
-
-        {/* 登录/注册切换 */}
-        <View style={styles.toggleContainer}>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              isLogin && styles.toggleButtonActive
-            ]}
-            onPress={() => setIsLogin(true)}
-          >
-            <ThemedText 
-              style={[
-                styles.toggleText,
-                isLogin && styles.toggleTextActive
-              ]}
-            >
-              登录
-            </ThemedText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              !isLogin && styles.toggleButtonActive
-            ]}
-            onPress={() => setIsLogin(false)}
-          >
-            <ThemedText 
-              style={[
-                styles.toggleText,
-                !isLogin && styles.toggleTextActive
-              ]}
-            >
-              注册
-            </ThemedText>
-          </TouchableOpacity>
-        </View>
-
-        {/* 表单区域 */}
-        <ThemedView style={styles.formContainer}>
+        {isAuthenticated && user ? (
+          renderLoggedInView()
+        ) : (
+          <>
+            <View style={{ marginTop: 20 }} />
+            <View style={styles.toggleContainer}>
+              <TouchableOpacity
+                style={[styles.toggleButton, isLogin && styles.toggleButtonActive]}
+                onPress={() => setIsLogin(true)}
+              >
+                <ThemedText style={[styles.toggleText, isLogin && styles.toggleTextActive]}>登录</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.toggleButton, !isLogin && styles.toggleButtonActive]}
+                onPress={() => setIsLogin(false)}
+              >
+                <ThemedText style={[styles.toggleText, !isLogin && styles.toggleTextActive]}>注册</ThemedText>
+              </TouchableOpacity>
+            </View>
+            <ThemedView style={styles.formContainer}>
           {isLogin ? (
             // 登录表单
             <>
@@ -504,7 +531,9 @@ export default function AuthScreen() {
         </ThemedView>
 
         {/* 其他登录方式 */}
-        
+          
+          </>
+        )}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -520,7 +549,50 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
+  loggedInContainer: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  avatarContainer: {
+    marginBottom: 30,
+  },
+  avatar: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#fff', // 与标题区域背景一致
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+  },
+  userInfoContainer: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  username: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
+  email: {
+    fontSize: 16,
+    color: '#666',
+  },
+  actionButtonsContainer: {
+    width: '100%',
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+  },
   backButton: {
+    backgroundColor: '#5856D6',
     marginTop: 50,
     marginBottom: 20,
     padding: 10,

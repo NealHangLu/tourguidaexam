@@ -1,5 +1,7 @@
 import { useRouter } from 'expo-router';
-import { Alert, Share, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Share, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { useAuth } from '@/hooks/useAuth';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
@@ -7,6 +9,7 @@ import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const { user, isAuthenticated } = useAuth();
 
 
   const handleContactSupport = () => {
@@ -56,22 +59,45 @@ export default function ProfileScreen() {
       {/* 顶部彩色背景 */}
       <View style={styles.headerBackground} />
       
-      {/* 登录/注册区域 */}
+      {/* 用户信息区域 - 根据登录状态显示不同内容 */}
       <TouchableOpacity 
         style={styles.loginContainer}
         onPress={() => handleNavigation('登录/注册')}
       >
-        <IconSymbol 
-          name="person.fill" 
-          size={60} 
-          color="#808080" 
-        />
-        <ThemedText style={styles.loginText}>登录 / 注册</ThemedText>
-        <IconSymbol 
-          name="chevron.forward" 
-          size={20} 
-          color="#808080" 
-        />
+        {isAuthenticated && user ? (
+          // 已登录状态：显示用户头像和名字
+          <>
+            <View style={styles.avatar}>
+                <Image 
+                  source={require('@/assets/images/profileimage-normal.png')}
+                  style={styles.avatarImage}
+                />
+              </View>
+            <View style={styles.userInfoContent}>
+              <ThemedText style={styles.usernameText}>{user.username || '用户'}</ThemedText>
+            </View>
+            <IconSymbol 
+              name="chevron.forward" 
+              size={20} 
+              color="#808080" 
+            />
+          </>
+        ) : (
+          // 未登录状态：显示登录/注册按钮
+          <>
+            <IconSymbol 
+              name="person.fill" 
+              size={60} 
+              color="#808080" 
+            />
+            <ThemedText style={styles.loginText}>登录 / 注册</ThemedText>
+            <IconSymbol 
+              name="chevron.forward" 
+              size={20} 
+              color="#808080" 
+            />
+          </>
+        )}
       </TouchableOpacity>
 
       {/* 开通会员横幅 */}
@@ -202,6 +228,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     flex: 1,
     marginLeft: 15,
+  },
+  avatar: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#fff', // 与标题区域背景一致
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avatarImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+  },
+  userInfoContent: {
+    flex: 1,
+    marginLeft: 15,
+  },
+  usernameText: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   memberBanner: {
     margin: 15,

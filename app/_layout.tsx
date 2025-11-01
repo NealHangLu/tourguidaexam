@@ -5,6 +5,7 @@ import { Text, TouchableOpacity } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { AuthProvider } from '@/hooks/useAuth';
 
 // 移除锚点设置，避免在标题前显示(tabs)文本
 
@@ -12,7 +13,8 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <AuthProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
         screenOptions={{
           headerStyle: {
@@ -183,6 +185,7 @@ export default function RootLayout() {
         })} />
       </Stack>
       <StatusBar style="auto" />
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
