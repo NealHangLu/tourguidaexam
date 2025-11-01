@@ -20,10 +20,10 @@ export default function AuthScreen() {
   const [loginPassword, setLoginPassword] = useState('');
   
   // 注册表单状态
-  const [registerUsername, setRegisterUsername] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerVerificationCode, setRegisterVerificationCode] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
   
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [countdown, setCountdown] = useState(0);
@@ -49,7 +49,7 @@ export default function AuthScreen() {
 
   // 处理注册
   const handleRegister = () => {
-    if (!registerUsername || !registerEmail || !registerVerificationCode || !registerPassword) {
+    if (!registerEmail || !registerVerificationCode || !registerPassword || !registerConfirmPassword) {
       Alert.alert('提示', '请填写所有必填信息');
       return;
     }
@@ -60,30 +60,32 @@ export default function AuthScreen() {
       return;
     }
     
+    // 验证密码格式
+    if (!isValidPassword(registerPassword)) {
+      Alert.alert('提示', '密码必须包含数字且长度至少8个字符');
+      return;
+    }
+    
+    // 验证两次密码是否一致
+    if (registerPassword !== registerConfirmPassword) {
+      Alert.alert('提示', '两次输入的密码不一致');
+      return;
+    }
+    
     // 模拟注册成功
     Alert.alert('成功', '注册成功', [
       { text: '确定', onPress: () => {
         setIsLogin(true);
-        setRegisterUsername('');
         setRegisterEmail('');
         setRegisterVerificationCode('');
         setRegisterPassword('');
+        setRegisterConfirmPassword('');
       }}
     ]);
   };
 
   // 发送邮箱验证码
   const handleSendVerificationCode = () => {
-    if (!registerEmail) {
-      Alert.alert('提示', '请输入邮箱地址');
-      return;
-    }
-    
-    if (!isValidEmail(registerEmail)) {
-      Alert.alert('提示', '请输入有效的邮箱地址');
-      return;
-    }
-    
     setIsSendingCode(true);
     
     // 模拟发送验证码
@@ -91,7 +93,7 @@ export default function AuthScreen() {
       setIsSendingCode(false);
       setCountdown(60);
       startCountdown();
-      Alert.alert('提示', `验证码已发送至 ${registerEmail}，模拟验证码：123456`);
+      Alert.alert('提示', '发送成功');
     }, 1000);
   };
 
@@ -112,6 +114,21 @@ export default function AuthScreen() {
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+  
+  // 验证密码格式：长度≥8且包含数字
+  const isValidPassword = (password: string) => {
+    return password.length >= 8 && /\d/.test(password);
+  };
+  
+  // 检查注册按钮是否可点击
+  const canRegister = () => {
+    return registerEmail && 
+           registerVerificationCode && 
+           registerPassword && 
+           registerConfirmPassword &&
+           isValidPassword(registerPassword) &&
+           registerPassword === registerConfirmPassword;
   };
 
   return (
@@ -213,20 +230,6 @@ export default function AuthScreen() {
             // 注册表单
             <>
               <View style={styles.inputContainer}>
-                <ThemedText style={styles.inputLabel}>用户名</ThemedText>
-                <View style={styles.inputWrapper}>
-                  <IconSymbol name="person" size={20} color="#808080" style={styles.inputIcon} />
-                  <TextInput
-                    style={styles.input}
-                    placeholder="请输入用户名"
-                    placeholderTextColor="#808080"
-                    value={registerUsername}
-                    onChangeText={setRegisterUsername}
-                  />
-                </View>
-              </View>
-
-              <View style={styles.inputContainer}>
                 <ThemedText style={styles.inputLabel}>邮箱</ThemedText>
                 <View style={styles.inputWrapper}>
                   <IconSymbol name="envelope" size={20} color="#808080" style={styles.inputIcon} />
@@ -259,10 +262,10 @@ export default function AuthScreen() {
                   <TouchableOpacity 
                     style={[
                       styles.sendCodeButton,
-                      (isSendingCode || countdown > 0) && styles.sendCodeButtonDisabled
+                      ((isSendingCode || countdown > 0) || !isValidEmail(registerEmail)) && styles.sendCodeButtonDisabled
                     ]}
                     onPress={handleSendVerificationCode}
-                    disabled={isSendingCode || countdown > 0}
+                    disabled={isSendingCode || countdown > 0 || !isValidEmail(registerEmail)}
                   >
                     <ThemedText style={styles.sendCodeButtonText}>
                       {isSendingCode ? '发送中...' : countdown > 0 ? `${countdown}s` : '发送验证码'}
@@ -277,7 +280,7 @@ export default function AuthScreen() {
                   <IconSymbol name="lock" size={20} color="#808080" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
-                    placeholder="请设置密码（6-20位）"
+                    placeholder="请设置密码（至少8位且包含数字）"
                     placeholderTextColor="#808080"
                     secureTextEntry
                     value={registerPassword}
@@ -285,10 +288,29 @@ export default function AuthScreen() {
                   />
                 </View>
               </View>
+              
+              <View style={styles.inputContainer}>
+                <ThemedText style={styles.inputLabel}>确认密码</ThemedText>
+                <View style={styles.inputWrapper}>
+                  <IconSymbol name="lock" size={20} color="#808080" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="请再次输入密码"
+                    placeholderTextColor="#808080"
+                    secureTextEntry
+                    value={registerConfirmPassword}
+                    onChangeText={setRegisterConfirmPassword}
+                  />
+                </View>
+              </View>
 
               <TouchableOpacity 
-                style={styles.submitButton}
+                style={[
+                  styles.submitButton,
+                  !canRegister() && styles.sendCodeButtonDisabled
+                ]}
                 onPress={handleRegister}
+                disabled={!canRegister()}
               >
                 <ThemedText style={styles.submitButtonText}>注册</ThemedText>
               </TouchableOpacity>
