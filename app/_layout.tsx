@@ -6,9 +6,7 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// 移除锚点设置，避免在标题前显示(tabs)文本
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -153,8 +151,8 @@ export default function RootLayout() {
             </TouchableOpacity>
           )
         })} />
-      {/* 联系客服页面 */}
-      <Stack.Screen name="contact-support" options={({ navigation }) => ({
+        {/* 联系客服页面 */}
+        <Stack.Screen name="contact-support" options={({ navigation }) => ({
           title: '联系客服',
           headerBackTitle: '返回',
           headerBackVisible: false,
@@ -165,6 +163,21 @@ export default function RootLayout() {
               activeOpacity={0.7}
             >
               <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text }}>返回</Text>
+            </TouchableOpacity>
+          )
+        })} />
+        {/* 登录注册页面 */}
+      <Stack.Screen name="auth" options={({ navigation }) => ({
+          title: '欢迎来到考试助手',
+          headerBackTitle: '返回',
+          headerBackVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity 
+              onPress={() => navigation.goBack()}
+              style={{ marginLeft: 4, padding: 0, backgroundColor: colorScheme === 'dark' ? DarkTheme.colors.background : DefaultTheme.colors.background, borderRadius: 0 }}
+              activeOpacity={0.7}
+            >
+              <Text style={{ fontSize: 16, color: colorScheme === 'dark' ? DarkTheme.colors.text : DefaultTheme.colors.text, backgroundColor: 'white' }}>返回</Text>
             </TouchableOpacity>
           )
         })} />

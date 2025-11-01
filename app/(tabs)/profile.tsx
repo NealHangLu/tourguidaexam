@@ -29,6 +29,9 @@ export default function ProfileScreen() {
   const handleNavigation = (route: string) => {
     // 根据不同的路由进行导航
     switch (route) {
+      case '登录/注册':
+        router.push('/auth');
+        break;
       case '品牌介绍':
         router.push('/brand-intro');
         break;
