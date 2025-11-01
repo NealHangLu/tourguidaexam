@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useRouter } from 'expo-router';
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 
 // 设置屏幕选项
 export const options = {
@@ -24,9 +24,13 @@ export default function AuthScreen() {
   const [registerVerificationCode, setRegisterVerificationCode] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [registerConfirmPassword, setRegisterConfirmPassword] = useState('');
+  const [verificationId, setVerificationId] = useState(''); // 存储验证码ID
   
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [countdown, setCountdown] = useState(0);
+  
+  // 环境ID
+  const envId = 'cloud1-0gnawc56024b4227';
 
   // 处理登录
   const handleLogin = () => {
@@ -41,6 +45,10 @@ export default function AuthScreen() {
       return;
     }
     
+    // 获取转换后的用户名用于登录
+    const username = convertEmailToUsername(loginEmail);
+    console.log('登录使用的用户名:', username);
+    
     // 模拟登录成功
     Alert.alert('成功', '登录成功', [
       { text: '确定', onPress: () => router.back() }
@@ -48,7 +56,7 @@ export default function AuthScreen() {
   };
 
   // 处理注册
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!registerEmail || !registerVerificationCode || !registerPassword || !registerConfirmPassword) {
       Alert.alert('提示', '请填写所有必填信息');
       return;
@@ -72,29 +80,175 @@ export default function AuthScreen() {
       return;
     }
     
-    // 模拟注册成功
-    Alert.alert('成功', '注册成功', [
-      { text: '确定', onPress: () => {
-        setIsLogin(true);
-        setRegisterEmail('');
-        setRegisterVerificationCode('');
-        setRegisterPassword('');
-        setRegisterConfirmPassword('');
-      }}
-    ]);
+    try {
+      console.log('开始注册流程');
+      console.log('邮箱:', registerEmail);
+      console.log('验证码:', registerVerificationCode);
+      console.log('验证码ID:', verificationId);
+      
+      // 先验证验证码
+      console.log('开始验证验证码');
+      const verifyResponse = await fetch(`https://${envId}.api.tcloudbasegateway.com/auth/v1/verification/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          verification_id: verificationId,
+          verification_code: registerVerificationCode
+        })
+      });
+      
+      console.log('验证码验证响应状态:', verifyResponse.status);
+      const verifyData = await verifyResponse.json();
+      console.log('验证码验证响应数据:', verifyData);
+      
+      if (verifyResponse.ok) {
+        // 验证码验证成功，进行注册
+        console.log('验证码验证成功，开始注册');
+        const registerResponse = await fetch(`https://${envId}.api.tcloudbasegateway.com/auth/v1/signup`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'x-device-id': 'device_id_' + Math.random().toString(36).substr(2, 9) // 生成随机设备ID
+          },
+          body: JSON.stringify({
+            email: registerEmail,
+            username: convertEmailToUsername(registerEmail), // 将邮箱转换为特殊格式的用户名
+            verification_token: verifyData.verification_token,
+            password: registerPassword
+          })
+        });
+        
+        console.log('注册响应状态:', registerResponse.status);
+        const registerData = await registerResponse.json();
+        console.log('注册响应数据:', registerData);
+        
+        if (registerResponse.ok) {
+          // 注册成功
+          Alert.alert('成功', '注册成功', [
+            { text: '确定', onPress: () => {
+              // 注册成功后显示登录成功，并返回
+              Alert.alert('成功', '登录成功', [
+                { text: '确定', onPress: () => router.back() }
+              ]);
+              // 清空表单
+              setIsLogin(true);
+              setRegisterEmail('');
+              setRegisterVerificationCode('');
+              setRegisterPassword('');
+              setRegisterConfirmPassword('');
+              setVerificationId('');
+            }}
+          ]);
+        } else {
+        console.error('注册失败:', registerData);
+        // 显示更详细的错误信息
+        const errorDetails = Object.keys(registerData).length > 0 
+          ? `详细信息: ${JSON.stringify(registerData)}` 
+          : '无详细错误信息';
+        Alert.alert('注册失败', `${registerData.message || '请稍后重试'}\n错误码: ${registerResponse.status}\n${errorDetails}`);
+      }
+    } else {
+      console.error('验证码验证失败:', verifyData);
+      const errorDetails = Object.keys(verifyData).length > 0 
+        ? `详细信息: ${JSON.stringify(verifyData)}` 
+        : '无详细错误信息';
+      Alert.alert('验证码错误', `${verifyData.message || '请输入正确的验证码'}\n错误码: ${verifyResponse.status}\n${errorDetails}`);
+    }
+  } catch (error: any) {
+    console.error('注册过程异常:', error);
+    Alert.alert('操作失败', `网络错误: ${error.message || String(error)}\n错误类型: ${error.name || 'Unknown'}`);
+  }
   };
 
   // 发送邮箱验证码
-  const handleSendVerificationCode = () => {
+  const handleSendVerificationCode = async () => {
     setIsSendingCode(true);
     
-    // 模拟发送验证码
-    setTimeout(() => {
+    // 确保邮箱格式正确
+    if (!isValidEmail(registerEmail)) {
       setIsSendingCode(false);
-      setCountdown(60);
-      startCountdown();
-      Alert.alert('提示', '发送成功');
-    }, 1000);
+      Alert.alert('提示', '请输入有效的邮箱地址');
+      return;
+    }
+    
+    try {
+      console.log('开始发送验证码，邮箱:', registerEmail);
+      console.log('环境ID:', envId);
+      console.log('API URL:', `https://${envId}.api.tcloudbasegateway.com/auth/v1/verification`);
+      
+      // 构造请求数据，根据API文档要求
+      const requestData = {
+        email: registerEmail,
+        target: 'ANY' // 根据API文档要求，target应为ANY
+      };
+      
+      console.log('请求数据:', JSON.stringify(requestData));
+      
+      // 添加超时处理
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒超时
+      
+      const response = await fetch(`https://${envId}.api.tcloudbasegateway.com/auth/v1/verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(requestData),
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      console.log('验证码请求响应状态:', response.status);
+      console.log('响应头:', Object.fromEntries(response.headers));
+      
+      // 尝试解析响应数据
+      let data;
+      try {
+        data = await response.json();
+        console.log('验证码请求响应数据:', data);
+      } catch (jsonError: any) {
+        console.error('JSON解析错误:', jsonError);
+        setIsSendingCode(false);
+        Alert.alert('发送失败', '服务器返回格式错误，请稍后重试');
+        return;
+      }
+      
+      if (response.ok) {
+        // 保存验证码ID
+        setVerificationId(data.verification_id || '');
+        setIsSendingCode(false);
+        setCountdown(60);
+        startCountdown();
+        Alert.alert('提示', '发送成功');
+        
+        // 检查用户是否已存在
+        if (data.is_user) {
+          Alert.alert('提示', '该邮箱已注册，请直接登录');
+        }
+      } else {
+        setIsSendingCode(false);
+        console.error('发送验证码失败:', data);
+        Alert.alert('发送失败', `错误码: ${response.status}\n${data.message || '请稍后重试'}`);
+      }
+    } catch (error: any) {
+      setIsSendingCode(false);
+      console.error('发送验证码异常:', error);
+      
+      // 处理特定错误类型
+      if (error.name === 'AbortError') {
+        Alert.alert('发送失败', '请求超时，请检查网络连接后重试');
+      } else if (error.message?.includes('Network')) {
+        Alert.alert('发送失败', '网络连接失败，请检查网络设置');
+      } else {
+        Alert.alert('发送失败', `错误: ${error.message || String(error)}`);
+      }
+    }
   };
 
   // 开始倒计时
@@ -114,6 +268,11 @@ export default function AuthScreen() {
   const isValidEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+  
+  // 将邮箱转换为特殊格式的用户名：@替换为at，.替换为dot
+  const convertEmailToUsername = (email: string) => {
+    return email.replace(/@/g, 'at').replace(/\./g, 'dot');
   };
   
   // 验证密码格式：长度≥8且包含数字
@@ -285,6 +444,19 @@ export default function AuthScreen() {
                     secureTextEntry
                     value={registerPassword}
                     onChangeText={setRegisterPassword}
+                    // 禁用自动填充和自动完成
+                    autoComplete="off"
+                    autoCorrect={false}
+                    contextMenuHidden={true}
+                    // 移除可能触发自动填充的属性
+                    // 不设置textContentType以避免系统识别为密码字段
+                    // 清除按钮
+                    clearButtonMode="while-editing"
+                    // 添加额外的禁用自动填充属性
+                    autoCapitalize="none"
+                    keyboardType="default"
+                    // 确保输入框焦点行为正常
+                    blurOnSubmit={false}
                   />
                 </View>
               </View>
@@ -300,6 +472,19 @@ export default function AuthScreen() {
                     secureTextEntry
                     value={registerConfirmPassword}
                     onChangeText={setRegisterConfirmPassword}
+                    // 禁用自动填充和自动完成
+                    autoComplete="off"
+                    autoCorrect={false}
+                    contextMenuHidden={true}
+                    // 移除可能触发自动填充的属性
+                    // 不设置textContentType以避免系统识别为密码字段
+                    // 清除按钮
+                    clearButtonMode="while-editing"
+                    // 添加额外的禁用自动填充属性
+                    autoCapitalize="none"
+                    keyboardType="default"
+                    // 确保输入框焦点行为正常
+                    blurOnSubmit={false}
                   />
                 </View>
               </View>
